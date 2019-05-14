@@ -57,86 +57,119 @@ const BorrowEquipmentForm = props => {
 			style={{
 				display: 'flex',
 				flexDirection: 'column',
-				width: 500,
-				margin: '0 auto',
-				textAlign: 'center'
+				width: '60%',
+				margin: '0 auto'
 			}}
 			className="addForm"
 		>
 			<h2>Borrow An Equipment</h2>
 			<select name="equipment_list">
-				<option >Select Equipment Here</option>
+						<option >Select Equipment Here</option>
 			</select>
-			<input 
-				type="input" 
-				// name="equipment_name" 
-				// className="equipment_name" 
-				placeholder="Borrower's Name" 
-				value={borrowerName}
-				onChange={e => setBorrowerName(e.target.value)}
-			/>
-			<input 
-				type="input"
-				// name="equipment_serial" 
-				// className="equipment_serial" 
-				placeholder="Borrower's Office"
-				value={borrowerOffice}
-				onChange={e => setBorrowerOffice(e.target.value)}
-			/>
-			<textarea 
-				// name="equipment_desc" 
-				// className="equipment_desc" 
-				placeholder="Borrower's Purpose"
-				rows="8"
-				columns="10"
-				value={borrowerPurpose}
-				onChange={e => setBorrowerPurpose(e.target.value)}
+			<div 
+				className="form"
+				style={{
+					display: 'flex',
+					justifyContent: 'space-between'
+				}}
+			>
+				<div 
+					className="leftForm" 
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+					}}
+					>
+					<input 
+						type="input" 
+						// name="equipment_name" 
+						// className="equipment_name" 
+						placeholder="Borrower's Name" 
+						value={borrowerName}
+						onChange={e => setBorrowerName(e.target.value)}
+					/>
+					<input 
+						type="input"
+						// name="equipment_serial" 
+						// className="equipment_serial" 
+						placeholder="Borrower's Office"
+						value={borrowerOffice}
+						onChange={e => setBorrowerOffice(e.target.value)}
+					/>
+					<textarea 
+						// name="equipment_desc" 
+						// className="equipment_desc" 
+						placeholder="Borrower's Purpose"
+						rows="8"
+						columns="10"
+						value={borrowerPurpose}
+						onChange={e => setBorrowerPurpose(e.target.value)}
+						>
+					</textarea>
+				</div>
+				<div 
+					className="centerForm"
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+					}}
 				>
-			</textarea>
-			<input 
-				type="file"
-				// name="equipment_status" 
-				// className="equipment_status" 
-				// value={borrowerSignature}
-				onChange={e => encodeImageFileAsURL(e, 'borrower')}
-			/>
-			<textarea 
-				// name="equipment_desc" 
-				// className="equipment_desc" 
-				placeholder="Borrower's Signature"
-				rows="8"
-				columns="10"
-				value={borrowerSignature}
+					<input 
+						type="file"
+						// name="equipment_status" 
+						// className="equipment_status" 
+						// value={borrowerSignature}
+						onChange={e => encodeImageFileAsURL(e, 'borrower')}
+					/>
+					<textarea 
+						// name="equipment_desc" 
+						// className="equipment_desc" 
+						placeholder="Borrower's Signature"
+						rows="8"
+						columns="10"
+						value={borrowerSignature}
+						>
+					</textarea>
+					{borrowerSignature !== "" && <img src={borrowerSignature} alt="Borrower's Signature" width="300" height="auto"/>}
+					<input 
+						type="input"
+						// name="equipment_serial" 
+						// className="equipment_serial" 
+						placeholder="Personnel's Name"
+						value={releasingPersonnelName}
+						onChange={e => setReleasingPersonnelName(e.target.value)}
+					/>
+				</div>
+				<div 
+					className="rightForm"
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+					}}
 				>
-			</textarea>
-			<img src={borrowerSignature} alt="Borrower's Signature" width="300" height="auto"/>
-			<input 
-				type="input"
-				// name="equipment_serial" 
-				// className="equipment_serial" 
-				placeholder="Personnel's Name"
-				value={releasingPersonnelName}
-				onChange={e => setReleasingPersonnelName(e.target.value)}
-			/>
-			<input 
-				type="file" 
-				// name="equipment_status" 
-				// className="equipment_status" 
-				// value={borrowerSignature}
-				onChange={e => encodeImageFileAsURL(e, 'personnel')}
-			/>
-			<textarea 
-				// name="equipment_desc" 
-				// className="equipment_desc" 
-				placeholder="Personnel's Signature"
-				rows="8"
-				columns="10"
-				value={releasingPersonnelSignature}
-				>
-			</textarea>
-			<img src={releasingPersonnelSignature} alt="Personnel's Signature" width="300" height="auto"/>
-			<input type="date" name="date_borrowed" />
-			<input type="date" name="expected_return_date" />
+				<input 
+					type="file" 
+					// name="equipment_status" 
+					// className="equipment_status" 
+					// value={borrowerSignature}
+					onChange={e => encodeImageFileAsURL(e, 'personnel')}
+				/>
+				<textarea 
+					// name="equipment_desc" 
+					// className="equipment_desc" 
+					placeholder="Personnel's Signature"
+					rows="8"
+					columns="10"
+					value={releasingPersonnelSignature}
+					>
+				</textarea>
+				{releasingPersonnelSignature !== "" && <img src={releasingPersonnelSignature} alt="Personnel's Signature" width="300" height="auto"/>}
+				<div style={{ display: 'flex'}}>
+					<input type="date" name="date_borrowed" />
+					<input type="date" name="expected_return_date" />
+				</div>
+			</div>
+			</div>
 			<button type="submit" onClick={handleSubmit}>Submit</button>
 			<div className="success">{transactionStatus}</div>
 		</div>

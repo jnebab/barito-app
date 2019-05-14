@@ -2,11 +2,17 @@ import React from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 
-import './main.scss'
+import './viewCalendar.scss'
 
 const ViewCalendar = props => {
 	return (
-		<FullCalendar defaultView="dayGridMonth" plugins={[ dayGridPlugin ]} weekends={false}/>
+		<FullCalendar 
+			handleWindowResize={true} 
+			defaultView="dayGridMonth" 
+			plugins={[dayGridPlugin]} 
+			contentHeight={450}
+			selectable={true}
+			/>
 	)
 }
 

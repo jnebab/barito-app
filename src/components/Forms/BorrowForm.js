@@ -1,7 +1,5 @@
 import React, { useState, useContext } from 'react'
 
-import EquipmentsContext from '../Context/EquipmentContext'
-
 
 const BorrowForm = ({ isChecked, isReturning }) => {
 	const [equipmentName, setEquipmentName] = useState("")
@@ -13,7 +11,6 @@ const BorrowForm = ({ isChecked, isReturning }) => {
 	const [releasingPersonnelSignature, setReleasingPersonnelSignature] = useState("")
 	const [borrowDate, setBorrowingDate] = useState("")
 	const [expectedReturnDate, setExpectedReturnDate] = useState("")
-	const reserved = useContext(EquipmentsContext)
 
 	function encodeImageFileAsURL(element) {
 		const file = element.files[0];

@@ -131,19 +131,7 @@ handlers["/available-equipments"] = (req, res) => {
 	if(req.method == "GET") {
 		connection.query("SELECT * FROM equipment_tbl WHERE eq_status = 'available'", (err, result, fields) => {
 			if (err) throw err.message;
-				let responseData = [];
-				Object.values(result).forEach((res, id) => {
-					responseData.push({
-						"id": res.eq_id,
-						"brand": res.eq_brand,
-						"unit": res.eq_unit,
-						"model": res.eq_model,
-						"serial": res.eq_serial,
-						"description": res.eq_description,
-						"status": res.eq_status
-					});
-				});
-				res.end(JSON.stringify(responseData));
+				res.end(JSON.stringify(result));
 		})
 	};
 };
@@ -153,7 +141,7 @@ handlers["/borrowed-equipments"] = (req, res) => {
 		connection.query("SELECT * FROM equipment_tbl WHERE eq_status === 'borrowed'", (err, result, fields) => {
 			if (err) throw err.message;
 				console.log("Number of records inserted: " + result.affectedRows);
-				res.end(result);  
+				res.end(JSON.stringify(result));  
 		})
 	};
 }
@@ -163,13 +151,13 @@ handlers["/reserved-equipments"] = (req, res) => {
 		connection.query("SELECT * FROM equipment_tbl WHERE eq_status === 'reserved'", (err, result, fields) => {
 			if (err) throw err.message;
 				console.log("Number of records inserted: " + result.affectedRows);
-				res.end(result);  
+				res.end(JSON.stringify(result));  
 		})
 	};
 }
 
 require('http').createServer((req, res) => {
-	res.header("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Origin", "*");
 	if(handlers[req.url]) {
 		res.writeHead(200, {"Content-Type":"application/json"});
 		handlers[req.url](req, res);

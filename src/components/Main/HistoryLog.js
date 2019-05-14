@@ -1,8 +1,10 @@
 import React from 'react'
+import Typography from '@material-ui/core/Typography'
+//import { withStyles } from '@material-ui/core/styles'
 
 const HistoryLog = props => {
 	return (
-		<h1>This is History Log</h1>
+		<Typography component="h2" variant="h1" gutterBottom>This is History Log</Typography>
 	)
 }
 
