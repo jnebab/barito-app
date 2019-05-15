@@ -1,9 +1,31 @@
 import React, { useState } from 'react'
+import { TextField, Button } from '@material-ui/core'
+import { makeStyles } from '@material-ui/styles'
 
-import './Forms.css'
+//import './Forms.css'
+
+const useStyles = makeStyles(theme => ({
+	container: {
+		display: 'flex',
+		flexWrap: 'wrap',
+	},
+	textField: {
+		marginLeft: 8,
+		marginRight: 8,
+	},
+	dense: {
+		marginTop: 16,
+	},
+	menu: {
+		width: 200,
+	},
+}))
 
 const AddEquipmentForm = props => {
-	const [name, setName] = useState("")
+	const classes = useStyles()
+	const [brand, setBrand] = useState("")
+	const [unit, setUnit] = useState("")
+	const [model, setModel] = useState("")
 	const [serial, setSerial] = useState("")
 	const [description, setDescription] = useState("")
 	const [status, setStatus] = useState("")
@@ -17,22 +39,26 @@ const AddEquipmentForm = props => {
 			headers: head,
 			mode: 'no-cors',
 			body: JSON.stringify({
-				equipment_name : name,
+				equipment_brand : brand,
+				equipment_unit: unit,
+				equipment_mode: model,
 				equipment_serial: serial,
 				equipment_description: description,
-				equipment_status: status
+				equipment_status: 'available'
 			})
 		});
 		fetch(req)
 		.then(response => {
-			setTransactionStatus(`New Equipment ${name} has been added successfully.`)
+			setTransactionStatus(`New Equipment ${brand} ${unit} ${model} has been added successfully.`)
 			clearFields();
 		})
 		.catch(error => setTransactionStatus(error.message))
 	}
 
 	const clearFields = () => {
-		setName("")
+		setBrand("")
+		setUnit("")
+		setModel("")
 		setSerial("")
 		setDescription("")
 		setStatus("")
@@ -43,48 +69,82 @@ const AddEquipmentForm = props => {
 			style={{
 				display: 'flex',
 				flexDirection: 'column',
-				width: 500,
+				width: 420,
 				margin: '0 auto',
 				textAlign: 'center'
 			}}
 			className="addForm"
 		>
 			<h2>Add New Equipment</h2>
-			<input 
-				type="input" 
-				name="equipment_name" 
-				className="equipment_name" 
-				placeholder="Equipment's Name" 
-				value={name}
-				onChange={e => setName(e.target.value)}
-			/>
-			<input 
-				type="input"
-				name="equipment_serial" 
-				className="equipment_serial" 
-				placeholder="Equipment's Serial"
-				value={serial}
-				onChange={e => setSerial(e.target.value)}
-			/>
-			<textarea 
-				name="equipment_desc" 
-				className="equipment_desc" 
-				placeholder="Equipment's Description"
-				rows="8"
-				columns="10"
+			<div 
+				style={{
+					display: 'flex',
+					justifyContent: 'space-between'
+				}}
+			>
+				<TextField
+					id="equipment-brand"
+					label="Equipment's Brand"
+					placeholder="Enter equipment brand"
+					className={classes.textField}
+					margin="normal"
+					variant="filled"
+					value={brand}
+					onChange={e => setBrand(e.target.value)}
+				/>
+				<TextField
+					id="equipment-unit"
+					label="Equipment's Unit"
+					placeholder="Enter equipment unit"
+					className={classes.textField}
+					margin="normal"
+					variant="filled"
+					value={unit}
+					onChange={e => setUnit(e.target.value)}
+				/>
+			</div>
+			<div 
+				style={{
+					display: 'flex',
+					justifyContent: 'space-between'
+				}}
+			>
+				<TextField
+					id="equipment-model"
+					label="Equipment's Model"
+					placeholder="Enter equipment model"
+					className={classes.textField}
+					margin="normal"
+					variant="filled"
+					value={model}
+					onChange={e => setModel(e.target.value)}
+				/>
+				<TextField
+					id="equipment-serial"
+					label="Equipment's Serial Number"
+					placeholder="Enter equipment serial number"
+					className={classes.textField}
+					margin="normal"
+					variant="filled"
+					value={serial}
+					onChange={e => setSerial(e.target.value)}
+				/>
+			</div>
+			<TextField
+				id="equipment-desc"
+				label="Equipment's Description"
+				placeholder="Enter equipment description"
+				className={classes.textField}
+				margin="normal"
+				variant="filled"
+				multiline
+				rowsMax="4"
 				value={description}
 				onChange={e => setDescription(e.target.value)}
-				>
-			</textarea>
-			<input 
-				type="input" 
-				name="equipment_status" 
-				className="equipment_status" 
-				placeholder="Equipment's Status"
-				value={status}
-				onChange={e => setStatus(e.target.value)}
 			/>
-			<button type="submit" onClick={handleSubmit}>Submit</button>
+			<Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>
+				Submit
+			</Button>
 			<div className="success">{transactionStatus}</div>
 		</div>
 	)

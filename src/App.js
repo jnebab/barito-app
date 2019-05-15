@@ -12,40 +12,37 @@ import { eqContext } from './components/Main/Context'
 
 const App = () => {
 	const [availableEquipments, setAvailableEquipments] = useState([])
-	//const [reservedEquipments, setReservedEquipments] = useState([])
+	const [reservedEquipments, setReservedEquipments] = useState([])
 	const [isError, setIsError] = useState(false);
 	
 
 	useEffect(() => {
-		async function fetchData() {
+		async function fetchAvailableEquipments() {
 			setIsError(false)
 			try {
 				const response = await axios('http://localhost:8001/available-equipments')
 				const result = await response
 				console.log(result)
 				setAvailableEquipments(result.data)
-      } catch (error) {
-        setIsError(true);
-      }
+			} catch (error) {
+				setIsError(true);
+			}
 		}
-		fetchData()
+		fetchAvailableEquipments()
 	}, [])
 
-	// useEffect(() => {
-	// 	const uri = 'http://localhost:8001/reserved-equipments';
-	// 	setReservedEquipments(getReservedEquipments(uri));
-	// }, [reservedEquipments])
-
-	// async function getAvailableEquipments(req) {
-	// 	// console.log("it is here!")
-	// 	const response = await fetch(req);
-	// 	console.log(response);
-	// 	const jsonData = await response.text();
-	// 	//console.log(jsonData)
-	// 	// const jsonData = JSON.parse(responseText);
-	// 	// console.log(jsonData)
-	// 	return jsonData;
-	// }
+	useEffect(() => {
+		async function fetchReservedEquipments() {
+			setIsError(false)
+			try {
+				const response = await axios('http://localhost:8001/reseved-equipments')
+				const result = await response
+				setReservedEquipments(result.data)
+			} catch (error) {
+				setIsError(true)
+			}
+		}
+	})
 
 		return (
 				<eqContext.Provider data={{availableEquipments}}>

@@ -11,6 +11,8 @@
     "@fullcalendar/daygrid": "^4.0.1",
     "@fullcalendar/react": "^4.0.2-beta",
     "@material-ui/core": "^3.9.3",
+    "@material-ui/icons": "^3.0.2",
+    "@material-ui/styles": "^3.0.0-alpha.10",
     "axios": "^0.18.0",
     "concurrently": "^4.1.0",
     "electron": "^4.1.4",

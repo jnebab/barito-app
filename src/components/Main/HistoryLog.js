@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography'
 
 const HistoryLog = props => {
 	return (
-		<Typography component="h2" variant="h1" gutterBottom>This is History Log</Typography>
+		<Typography variant="h4" gutterBottom>History Log</Typography>
 	)
 }
 

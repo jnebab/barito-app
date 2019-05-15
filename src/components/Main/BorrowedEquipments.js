@@ -6,7 +6,7 @@ const BorrowedEquipments = props => {
 
 	return (
 		<>
-			<Typography component="h2" variant="h1" gutterBottom>Borrowed Equipments</Typography>
+			<Typography variant="h4" gutterBottom>Borrowed Equipments</Typography>
 		</>
 	)
 }

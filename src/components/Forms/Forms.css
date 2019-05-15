@@ -1,20 +1,20 @@
-.addForm input,
+/* .addForm input,
 .addForm textarea,
 .addForm button,
 .addForm select {
 	margin-bottom: 15px;
 	background: transparent;
 	border-radius: 3px;
-	/* text-transform: lowercase; */
+	text-transform: lowercase;
 	outline: none;
-}
+} */
 
-.addForm select {
+/* .addForm select {
 	padding: 8px 15px;
 	height: 35px;
-}
+} */
 
-.addForm input {
+/* .addForm input {
 	padding: 8px 15px;
 	height: 35px;
 	-webkit-transition: all 0.30s ease-in-out;
@@ -24,9 +24,9 @@
   outline: none;
   margin: 5px 1px 3px 0px;
   border: 1px solid steelblue;
-}
+} */
 
-.addForm textarea {
+/* .addForm textarea {
 	padding: 10px 15px;
 	-webkit-transition: all 0.30s ease-in-out;
   -moz-transition: all 0.30s ease-in-out;
@@ -35,22 +35,22 @@
   outline: none;
   margin: 5px 1px 3px 0px;
   border: 1px solid steelblue;
-}
+} */
 
-.addForm input::placeholder,
+/* .addForm input::placeholder,
 .addForm textarea::placeholder {
 	color: steelblue;
 	opacity: 0.5;
-}
+} */
 
-.addForm input:focus,
+/* .addForm input:focus,
 .addForm textarea:focus {
 	box-shadow: 0 0 5px rgba(81, 203, 238, 1);
   padding: 3px 0px 3px 3px;
   margin: 5px 1px 3px 0px;
   border: 1px solid rgba(81, 203, 238, 1);
-}
-
+} */
+/* 
 .addForm button {
 	height: 55px;
 	padding: 8px 15px;
@@ -61,9 +61,9 @@
 	cursor: pointer;
 	text-transform: uppercase;
 	border: 1px solid orangered;
-}
+} */
 
-.addForm button:hover {
+/* .addForm button:hover {
 	background: rgb(201, 93, 53);
 	border: 1px solid rgb(201, 93, 53);
-}
+} */
