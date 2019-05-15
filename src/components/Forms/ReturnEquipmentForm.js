@@ -144,8 +144,13 @@ const ReturnEquipmentForm = props => {
 				)
 			case 1:
 				return (
-					<div  style={{display: 'flex', justifyContent: 'center', }}>
-						<div style={{display: 'flex', flexDirection: 'column', margin: '0 10px'}}>
+					<div  style={{
+						display: 'flex', 
+						flexDirection: 'column', 
+						alignItems: 'center', 
+						justifyContent: 'center', 
+					}}>
+						<div style={{display: 'flex'}}>
 							<TextField
 								id="returnee-name"
 								label="Name of Returnee"
@@ -155,6 +160,9 @@ const ReturnEquipmentForm = props => {
 								variant="filled"
 								value={returneeName}
 								onChange={e => setReturneeName(e.target.value)}
+								style={{
+									margin: 10
+								}}
 							/>
 							<TextField
 								id="returnee-office"
@@ -165,9 +173,12 @@ const ReturnEquipmentForm = props => {
 								variant="filled"
 								value={returneeOffice}
 								onChange={e => setReturneeOffice(e.target.value)}
+								style={{
+									margin: 10
+								}}
 							/>
 						</div>
-						<div style={{display: 'flex', flexDirection: 'column', margin: '0 10px'}}>
+						<div style={{display: 'flex'}}>
 							<TextField
 								id="receiving-personnel-name"
 								label="Name of Receiving Personnel"
@@ -177,7 +188,27 @@ const ReturnEquipmentForm = props => {
 								variant="filled"
 								value={receivingPersonnelName}
 								onChange={e => setReceivingPersonnelName(e.target.value)}
+								style={{
+									margin: 10
+								}}
 							/>
+							<TextField
+								id="equipment-remarks"
+								label="Returned Equipment Remarks"
+								placeholder="Type the status of the returned equipment"
+								className={classes.textField}
+								margin="normal"
+								variant="filled"
+								value={returnedEquipmentRemarks}
+								multiline
+								rowsMax={4}
+								onChange={e => setReturnedEquipmentRemarks(e.target.value)}
+								style={{
+									margin: 10
+								}}
+							/>
+						</div>
+						<div style={{display: 'flex'}}>
 							<TextField
 								id="returned-date"
 								label="Returned Date"
