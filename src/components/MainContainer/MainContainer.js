@@ -6,10 +6,9 @@ import { faCalendarCheck, faCheckSquare, faClipboardCheck, faPlusSquare, faClipb
 import routes from '../../routes'
 
 import './MainContainer.scss'
-import AvailableEquipments from '../Main/AvailableEquipments';
 
 
-const MainContainer = ({ availableEquipments }) => {
+const MainContainer = props => {
 
 	return (
 		<Router>

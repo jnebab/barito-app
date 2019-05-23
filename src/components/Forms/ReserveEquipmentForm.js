@@ -1,10 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Select, MenuItem, TextField, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-
-
-// import { eqContext } from '../Main/Context'
-import { availableEquipments } from '../../datasource'
+import { AvailableEquipmentContext } from '../../Store'
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -32,7 +29,7 @@ const ReserveEquipmentForm = props => {
 	const [dateToPickUp, setDateToPickUp] = useState("")
 	const [equipmentName, setEquipmentName] = useState("Select an Equipment")
 	const [transactionStatus, setTransactionStatus] = useState("")
-	// const { availableEquipments } = useContext(eqContext)
+	const [availableEquipments, isLoadingAvailable] = useContext(AvailableEquipmentContext)
 
 	const handleSubmit = e => {
 		const uri = 'http://localhost:8001/reserve-equipment';
@@ -73,7 +70,9 @@ const ReserveEquipmentForm = props => {
 				<MenuItem value="Select an Equipment">
 					Select an Equipment
 				</MenuItem>
-				{availableEquipments.map((eq, index) => (<MenuItem value={`${eq.brand} ${eq.unit} ${eq.model}`}>{`${eq.brand} ${eq.unit} ${eq.model}`}</MenuItem>))}
+				{availableEquipments.map((eq, index) => {
+					return (<MenuItem key={index} value={`${eq.eq_id}-${eq.eq_brand}-${eq.eq_unit}-${eq.eq_model}`}>{`(${eq.eq_id}) ${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}</MenuItem>)
+				})}
 			</Select>
 			<TextField
 				id="reservee-name"
@@ -107,28 +106,36 @@ const ReserveEquipmentForm = props => {
 				value={reserveePurpose}
 				onChange={e => setReserveePurpose(e.target.value)}
 			/>
-			<TextField
-				id="date-to-use"
-				label="Date To Use"
-				type="datetime-local"
-				className={classes.textField}
-				InputLabelProps={{
-					shrink: true,
-				}}
-				value={dateToUse}
-				onChange={e => setDateToUse(e.target.value)}
-			/>
-			<TextField
-				id="date-to-pickup"
-				label="Date To Pickup"
-				type="datetime-local"
-				className={classes.textField}
-				InputLabelProps={{
-					shrink: true,
-				}}
-				value={dateToPickUp}
-				onChange={e => setDateToPickUp(e.target.value)}
-			/>
+			<div style={{display: 'flex', marginBottom: 20, }}>
+				<TextField
+					id="date-to-use"
+					label="Date To Use"
+					type="datetime-local"
+					className={classes.textField}
+					InputLabelProps={{
+						shrink: true,
+					}}
+					value={dateToUse}
+					onChange={e => setDateToUse(e.target.value)}
+					style={{
+						marginRight: 10
+					}}
+				/>
+				<TextField
+					id="date-to-pickup"
+					label="Date To Pickup"
+					type="datetime-local"
+					className={classes.textField}
+					InputLabelProps={{
+						shrink: true,
+					}}
+					style={{
+						marginLeft: 10
+					}}
+					value={dateToPickUp}
+					onChange={e => setDateToPickUp(e.target.value)}
+				/>
+			</div>
 			<Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>
 				Submit
 			</Button>

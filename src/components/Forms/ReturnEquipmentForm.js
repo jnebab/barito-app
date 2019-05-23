@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
+import axios from 'axios'
 import { makeStyles } from '@material-ui/styles'
 import { Stepper, Step, StepLabel, 
-	Button, Checkbox, TextField, Select, MenuItem, 
-	FormControlLabel, Typography,
+	Button, TextField, Select, MenuItem, Typography,
 	Card, CardContent, CardActionArea, CardMedia } from '@material-ui/core'
 
-import { borrowedEquipments } from '../../datasource'
+import { BorrowedEquipmentContext } from '../../Store'
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -31,18 +31,18 @@ const useStyles = makeStyles(theme => ({
 		width: 250
 	},
 	media: {
-    height: 100,
+		height: 100,
 	},
 	card: {
 		maxWidth: 250,
 		marginTop: 20
 	},
 	backButton: {
-    marginRight: 8,
-  },
-  instructions: {
-    marginTop: 8,
-    marginBottom: 8,
+		marginRight: 8,
+	},
+	instructions: {
+		marginTop: 8,
+		marginBottom: 8,
 	}
 }))
 
@@ -52,7 +52,8 @@ function getSteps() {
 
 const ReturnEquipmentForm = props => {
 	const classes = useStyles()
-	const [borrowedEquipmentName, setBorrowedEquipmentName] = useState("")
+	const [borrowedEquipmentName, setBorrowedEquipmentName] = useState("Select an Equipment")
+	//const [equipmentId, setEquipmentId] = useState("")
 	const [activeStep, setActiveStep] = useState(0)
 	const [returneeName, setReturneeName] = useState("")
 	const [returneeOffice, setReturneeOffice] = useState("")
@@ -61,7 +62,21 @@ const ReturnEquipmentForm = props => {
 	const [receivingPersonnelSignature, setReceivingPersonnelSignature] = useState("")
 	const [returnedDate, setReturnedDate] = useState("")
 	const [returnedEquipmentRemarks, setReturnedEquipmentRemarks] = useState("")
+	const [transactionStatus, setTransactionStatus] = useState()
+	const [borrowedEquipments, isLoadingBorrowed] = useContext(BorrowedEquipmentContext)
 	const steps = getSteps()
+
+	useEffect(() => {
+		console.log('equipments array',isLoadingBorrowed ? 'fetching data...' : equipments)
+		console.log('borrowed equipments array', borrowed)
+	})
+
+	const equipments = !isLoadingBorrowed && borrowedEquipments[0]
+	const borrowed = !isLoadingBorrowed && borrowedEquipments[1].filter(eq => eq.eq_status == 'borrowed')
+
+	const getBorrowedEquipmentId = (name) => {
+		borrowed.filter(b => `${b.eq_brand} ${b.eq_unit} ${b.eq_mode}` == name).map(eq => console.log(eq.eq_id))
+	}
 
 	function getStepContent(stepIndex) {
 		switch (stepIndex) {
@@ -81,7 +96,7 @@ const ReturnEquipmentForm = props => {
 									<MenuItem value="Select an Equipment">
 										Select an Equipment
 									</MenuItem>
-									{borrowedEquipments.map((eq, index) => (<MenuItem key={index} value={eq.equipment_name}>{eq.equipment_name}</MenuItem>))}
+									{!isLoadingBorrowed && borrowed.map((eq, index) => (<MenuItem key={index} value={`${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}>{`${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}</MenuItem>))}
 							</Select>
 							<TextField
 								id="borrower-name"
@@ -89,10 +104,10 @@ const ReturnEquipmentForm = props => {
 								className={classes.textField}
 								margin="normal"
 								variant="filled"
-								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.borrower_name)}
+								value={!isLoadingBorrowed && equipments.filter(b => b.eq_id === getBorrowedEquipmentId(borrowedEquipmentName)).map(eq => console.log('borrower name', eq.borrower_name))}
 								disabled
 							/>
-							<TextField 
+							{/* <TextField 
 								id="borrower-purpose"
 								label="Purpose of Borrowing"
 								className={classes.textField}
@@ -100,7 +115,7 @@ const ReturnEquipmentForm = props => {
 								variant="filled"
 								multiline
 								rowsMax={4}
-								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.borrowing_purpose)}
+								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.borrower_purpose)}
 								disabled
 							/>
 						</div>
@@ -138,7 +153,7 @@ const ReturnEquipmentForm = props => {
 								}}
 								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.expected_return_date)}
 								disabled
-							/>
+							/> */}
 						</div>
 					</div>
 				)
@@ -294,7 +309,40 @@ const ReturnEquipmentForm = props => {
 	}
 
 	const handleSubmit = () => {
+		const uri = 'http://localhost:8001/borrow-equipment';
+		const head = new Headers();
+		const req = new Request(uri, {
+			method: 'POST',
+			headers: head,
+			mode: 'no-cors',
+			body: JSON.stringify({
+				equipment_name: borrowedEquipmentName,
+				returnee_name: returneeName,
+				returnee_office: returneeOffice,
+				returnee_signature: returneeSignature,
+				returned_date: returnedDate,
+				receiving_personnel_name: receivingPersonnelName,
+				receiving_personnel_signature: receivingPersonnelSignature,
+				returned_equipment_remarks: returnedEquipmentRemarks
+			})
+		})
+		fetch(req)
+		.then(response => {
+			setTransactionStatus(`New Equipment ${borrowedEquipmentName} has been returned successfully.`)
+			clearFields()
+		})
+		.catch(error => console.log(error.message))
+	}
 
+	const clearFields = () => {
+		setBorrowedEquipmentName("")
+		setReturneeName("")
+		setReturneeOffice("")
+		setReturneeSignature("")
+		setReturnedDate("")
+		setReceivingPersonnelName("")
+		setReceivingPersonnelSignature("")
+		setReturnedEquipmentRemarks("")
 	}
 
 	function handleNext() {
@@ -334,7 +382,7 @@ const ReturnEquipmentForm = props => {
 					<StepLabel>{label}</StepLabel>
 				</Step>
 			))}
-    </Stepper>
+		</Stepper>
 		<div style={{ textAlign: 'center'}}>
 			{activeStep === steps.length ? (
 				<div>
@@ -343,7 +391,7 @@ const ReturnEquipmentForm = props => {
 				</div>
 			) : (
 				<div>
-					<Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+					<div className={classes.instructions}>{getStepContent(activeStep)}</div>
 					<div style={{display: 'flex', justifyContent: 'space-around', marginTop: 16}}>
 						<Button
 							disabled={activeStep === 0}
@@ -358,7 +406,7 @@ const ReturnEquipmentForm = props => {
 					</div>
 				</div>
 			)}
-      </div>
+			</div>
 		</div>
 	)
 }

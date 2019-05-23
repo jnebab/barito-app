@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Stepper, Step, StepLabel, 
 		Button, Checkbox, TextField, Select, MenuItem, 
 		FormControlLabel, Typography,
 		Card, CardContent, CardActionArea, CardMedia } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { availableEquipments, reservedEquipments } from '../../datasource'
 
-import axios from 'axios'
+import { AvailableEquipmentContext, ReservedEquipmentContext, HistoryLogContext } from '../../Store'
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -41,10 +40,10 @@ const useStyles = makeStyles(theme => ({
 	backButton: {
     marginRight: 8,
   },
-  instructions: {
-    marginTop: 8,
-    marginBottom: 8,
-	}
+  // instructions: {
+  //   marginTop: 8,
+  //   marginBottom: 8,
+	// }
 }))
 
 function getSteps() {
@@ -62,9 +61,12 @@ const BorrowEquipmentForm = props => {
 	const [borrowerSignature, setBorrowerSignature] = useState("")
 	const [releasingPersonnelName, setReleasingPersonnelName] = useState("")
 	const [releasingPersonnelSignature, setReleasingPersonnelSignature] = useState("")
-	const [borrowedDate, setBorrowedDate] = useState(null)
-	const [expectedReturnDate, setExpectedReturnDate] = useState(null)
+	const [borrowedDate, setBorrowedDate] = useState("")
+	const [expectedReturnDate, setExpectedReturnDate] = useState("")
+	const [availableEquipments, isLoadingAvailable] = useContext(AvailableEquipmentContext)
+	const [reservedEquipments, isLoadingReserve] = useContext(ReservedEquipmentContext)
 	const [transactionStatus, setTransactionStatus] = ("")
+	const [addHistory, setAddHistory] = useContext(HistoryLogContext)
 	const steps = getSteps()
 
 	function getStepContent(stepIndex) {
@@ -99,7 +101,9 @@ const BorrowEquipmentForm = props => {
 								<MenuItem value="Select an Equipment">
 									Select an Equipment
 								</MenuItem>
-								{equipments.map((eq, index) => (<MenuItem value={`${eq.brand} ${eq.unit} ${eq.model}`}>{`${eq.brand} ${eq.unit} ${eq.model}`}</MenuItem>))}
+								{equipments.map((eq, index) => {
+									return (<MenuItem key={index} value={`${eq.eq_id}-${eq.eq_brand}-${eq.eq_unit}-${eq.eq_model}`}>{`(${eq.eq_id}) ${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}</MenuItem>)
+								})}
 							</Select>
 						</div>
 						<div style={{display: 'flex', flexDirection: 'column', margin: '0 20px'}}>
@@ -206,6 +210,7 @@ const BorrowEquipmentForm = props => {
 										className={classes.media}
 										image={borrowerSignature}
 										title="Borrower's Signature"
+										src={borrowerSignature}
 									/>
 									<CardContent>
 										<Typography component="p">
@@ -234,6 +239,7 @@ const BorrowEquipmentForm = props => {
 										className={classes.media}
 										image={releasingPersonnelSignature}
 										title="Releasing Personnel's Signature"
+										src={releasingPersonnelSignature}
 									/>
 									<CardContent>
 										<Typography component="p">
@@ -263,23 +269,47 @@ const BorrowEquipmentForm = props => {
 	}
 
 	const handleSubmit = () => {
-		axios.post('http://localhost:8001/borrow-equipment', {
-			equipment_name: equipmentName,
-			borrower_name: borrowerName,
-			borrower_office: borrowerOffice,
-			borrowing_purpose: borrowerPurpose,
-			borrower_signature: borrowerSignature,
-			borrowed_date: borrowedDate,
-			expected_return_date: expectedReturnDate,
-			releasing_personnel_name: releasingPersonnelName,
-			releasing_personnel_signature: releasingPersonnelSignature,
+		const uri = 'http://localhost:8001/borrow-equipment';
+		const head = new Headers();
+		const req = new Request(uri, {
+			method: 'POST',
+			headers: head,
+			mode: 'no-cors',
+			body: JSON.stringify({
+				equipment_name: equipmentName,
+				borrower_name: borrowerName,
+				borrower_office: borrowerOffice,
+				borrower_purpose: borrowerPurpose,
+				borrower_signature: borrowerSignature,
+				borrowed_date: borrowedDate,
+				expected_return_date: expectedReturnDate,
+				releasing_personnel_name: releasingPersonnelName,
+				releasing_personnel_signature: releasingPersonnelSignature
+			})
 		})
-		.then(function (response) {
-			console.log(response)
+		fetch(req)
+		.then(response => {
+			setTransactionStatus(`New Equipment ${equipmentName} has been added successfully.`)
+			setAddHistory([...addHistory, {
+				transaction: 'Add New Equipment',
+				equipment: equipmentName,
+				time: Date.now()
+			}])
+			clearFields()
 		})
-		.catch(function (error) {
-			console.log(error)
-		})
+		.catch(error => console.log(error.message))
+	}
+
+	const clearFields = () => {
+		setEquipmentName("")
+		setBorrowerName("")
+		setBorrowerOffice("")
+		setBorrowerPurpose("")
+		setBorrowerSignature("")
+		setBorrowedDate("")
+		setExpectedReturnDate("")
+		setReleasingPersonnelName("")
+		setReleasingPersonnelSignature("")
 	}
 
 	const encodeImageFileAsURL = (e, user) => {
@@ -318,7 +348,7 @@ const BorrowEquipmentForm = props => {
 				</div>
 			) : (
 				<div>
-					<Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+					<div className={classes.instructions}>{getStepContent(activeStep)}</div>
 					<div style={{display: 'flex', justifyContent: 'space-around', marginTop: 16}}>
 						<Button
 							disabled={activeStep === 0}
@@ -327,11 +357,13 @@ const BorrowEquipmentForm = props => {
 						>
 							Back
 						</Button>
-						<Button variant="contained" color="primary" onClick={steps.length -1 ? handleSubmit : handleNext}>
+						<Button variant="contained" color="primary" onClick={activeStep === steps.length -1 ? handleSubmit : handleNext}>
 							{activeStep === steps.length - 1 ? 'Finish' : 'Next'}
 						</Button>
 					</div>
+					<p>{transactionStatus}</p>
 				</div>
+
 			)}
       </div>
 		</div>

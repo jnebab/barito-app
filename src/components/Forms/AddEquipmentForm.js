@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { TextField, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
+import { HistoryLogContext } from '../../Store'
 
 //import './Forms.css'
 
@@ -30,6 +31,7 @@ const AddEquipmentForm = props => {
 	const [description, setDescription] = useState("")
 	const [status, setStatus] = useState("")
 	const [transactionStatus, setTransactionStatus] = useState("")
+	const [addHistory, setAddHistory] = useContext(HistoryLogContext)
 
 	const handleSubmit = () => {
 		const uri = 'http://localhost:8001/add-equipment';
@@ -41,18 +43,23 @@ const AddEquipmentForm = props => {
 			body: JSON.stringify({
 				equipment_brand : brand,
 				equipment_unit: unit,
-				equipment_mode: model,
+				equipment_model: model,
 				equipment_serial: serial,
 				equipment_description: description,
 				equipment_status: 'available'
 			})
-		});
+		})
 		fetch(req)
 		.then(response => {
 			setTransactionStatus(`New Equipment ${brand} ${unit} ${model} has been added successfully.`)
-			clearFields();
+			setAddHistory([...addHistory, {
+				transaction: 'Add New Equipment',
+				equipment: `${brand} ${unit} ${model}`,
+				time: Date.now()
+			}])
+			clearFields()
 		})
-		.catch(error => setTransactionStatus(error.message))
+		.catch(error => console.log(error.message))
 	}
 
 	const clearFields = () => {
@@ -112,7 +119,7 @@ const AddEquipmentForm = props => {
 				<TextField
 					id="equipment-model"
 					label="Equipment's Model"
-					placeholder="Enter equipment model"
+					placeholder="Enter model"
 					className={classes.textField}
 					margin="normal"
 					variant="filled"
@@ -121,8 +128,8 @@ const AddEquipmentForm = props => {
 				/>
 				<TextField
 					id="equipment-serial"
-					label="Equipment's Serial Number"
-					placeholder="Enter equipment serial number"
+					label="Equipment's Serial No"
+					placeholder="Enter serial number"
 					className={classes.textField}
 					margin="normal"
 					variant="filled"
@@ -133,7 +140,7 @@ const AddEquipmentForm = props => {
 			<TextField
 				id="equipment-desc"
 				label="Equipment's Description"
-				placeholder="Enter equipment description"
+				placeholder="Enter description"
 				className={classes.textField}
 				margin="normal"
 				variant="filled"
@@ -141,6 +148,9 @@ const AddEquipmentForm = props => {
 				rowsMax="4"
 				value={description}
 				onChange={e => setDescription(e.target.value)}
+				style={{
+					marginBottom: 20
+				}}
 			/>
 			<Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>
 				Submit

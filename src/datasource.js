@@ -61,6 +61,16 @@ const borrowedEquipments = [
 		"expected_return_date": "2019-05-16T09:00",
 		"releasing_personnel_name": "Erwin Maximo"
 	},
+	{
+		"id": 3,
+		"equipment_name": "EPSON D-A918 L6HZ",
+		"borrower_name": "Brent Alcoy",
+		"borrower_office": "Accounting",
+		"borrowing_purpose": "Fund Raising",
+		"borrowed_date": "2019-06-14T08:00",
+		"expected_return_date": "2019-05-16T09:00",
+		"releasing_personnel_name": "Erwin Maximo"
+	}
 ]
 
 export { availableEquipments, borrowedEquipments, reservedEquipments }
