@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react'
-import axios from 'axios'
 import { makeStyles } from '@material-ui/styles'
 import { Stepper, Step, StepLabel, 
 	Button, TextField, Select, MenuItem, Typography,
@@ -53,7 +52,6 @@ function getSteps() {
 const ReturnEquipmentForm = props => {
 	const classes = useStyles()
 	const [borrowedEquipmentName, setBorrowedEquipmentName] = useState("Select an Equipment")
-	//const [equipmentId, setEquipmentId] = useState("")
 	const [activeStep, setActiveStep] = useState(0)
 	const [returneeName, setReturneeName] = useState("")
 	const [returneeOffice, setReturneeOffice] = useState("")
@@ -67,16 +65,15 @@ const ReturnEquipmentForm = props => {
 	const steps = getSteps()
 
 	useEffect(() => {
-		console.log('equipments array',isLoadingBorrowed ? 'fetching data...' : equipments)
-		console.log('borrowed equipments array', borrowed)
+		console.log('borrowed equipments array',isLoadingBorrowed ? 'fetching data...' : borrowedEquipments)
 	})
 
-	const equipments = !isLoadingBorrowed && borrowedEquipments[0]
-	const borrowed = !isLoadingBorrowed && borrowedEquipments[1].filter(eq => eq.eq_status == 'borrowed')
-
-	const getBorrowedEquipmentId = (name) => {
-		borrowed.filter(b => `${b.eq_brand} ${b.eq_unit} ${b.eq_mode}` == name).map(eq => console.log(eq.eq_id))
+	const handleChange = e => {
+		e.preventDefault()
+		setBorrowedEquipmentName(e.target.value)
 	}
+
+	const equipments = !isLoadingBorrowed && borrowedEquipments.filter(eq => eq.returned_eq_remarks === null)
 
 	function getStepContent(stepIndex) {
 		switch (stepIndex) {
@@ -87,7 +84,7 @@ const ReturnEquipmentForm = props => {
 							<Select
 									name="equipment_dropdown"
 									value={borrowedEquipmentName} 
-									onChange={e => setBorrowedEquipmentName(e.target.value)}
+									onChange={handleChange}
 									style={{
 										marginTop: 22,
 										width: 250
@@ -96,7 +93,7 @@ const ReturnEquipmentForm = props => {
 									<MenuItem value="Select an Equipment">
 										Select an Equipment
 									</MenuItem>
-									{!isLoadingBorrowed && borrowed.map((eq, index) => (<MenuItem key={index} value={`${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}>{`${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}</MenuItem>))}
+									{!isLoadingBorrowed && equipments.map((eq, index) => (<MenuItem key={index} value={`${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}>{`${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`}</MenuItem>))}
 							</Select>
 							<TextField
 								id="borrower-name"
@@ -104,18 +101,16 @@ const ReturnEquipmentForm = props => {
 								className={classes.textField}
 								margin="normal"
 								variant="filled"
-								value={!isLoadingBorrowed && equipments.filter(b => b.eq_id === getBorrowedEquipmentId(borrowedEquipmentName)).map(eq => console.log('borrower name', eq.borrower_name))}
+								value={!isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.borrower_name)}
 								disabled
 							/>
-							{/* <TextField 
+							<TextField 
 								id="borrower-purpose"
 								label="Purpose of Borrowing"
 								className={classes.textField}
 								margin="normal"
 								variant="filled"
-								multiline
-								rowsMax={4}
-								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.borrower_purpose)}
+								value={!isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.borrower_purpose)}
 								disabled
 							/>
 						</div>
@@ -126,34 +121,26 @@ const ReturnEquipmentForm = props => {
 									className={classes.textField}
 									margin="normal"
 									variant="filled"
-									value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.releasing_personnel_name)}
+									value={!isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.releasing_personnel_name)}
 									disabled
 								/>
 							<TextField
 								id="date-borrowed"
 								label="Date Borrowed"
-								type="datetime-local"
 								className={classes.textField}
-								InputLabelProps={{
-									shrink: true,
-								}}
-								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.borrowed_date)}
+								value={!isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.borrowed_date)}
 								disabled
 							/>
 							<TextField
 								id="date-expected-return"
 								label="Expected Return Date"
-								type="datetime-local"
 								className={classes.textField}
 								style={{
 									marginTop: 20
 								}}
-								InputLabelProps={{
-									shrink: true,
-								}}
-								value={borrowedEquipments.filter(beq => beq.equipment_name === borrowedEquipmentName).map(eq => eq.expected_return_date)}
+								value={!isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.expected_return_date)}
 								disabled
-							/> */}
+							/>
 						</div>
 					</div>
 				)
@@ -180,21 +167,6 @@ const ReturnEquipmentForm = props => {
 								}}
 							/>
 							<TextField
-								id="returnee-office"
-								label="Office of Returnee"
-								placeholder="Type office of returnee"
-								className={classes.textField}
-								margin="normal"
-								variant="filled"
-								value={returneeOffice}
-								onChange={e => setReturneeOffice(e.target.value)}
-								style={{
-									margin: 10
-								}}
-							/>
-						</div>
-						<div style={{display: 'flex'}}>
-							<TextField
 								id="receiving-personnel-name"
 								label="Name of Receiving Personnel"
 								placeholder="Type name of personnel"
@@ -207,24 +179,24 @@ const ReturnEquipmentForm = props => {
 									margin: 10
 								}}
 							/>
-							<TextField
-								id="equipment-remarks"
-								label="Returned Equipment Remarks"
-								placeholder="Type the status of the returned equipment"
-								className={classes.textField}
-								margin="normal"
-								variant="filled"
-								value={returnedEquipmentRemarks}
-								multiline
-								rowsMax={4}
-								onChange={e => setReturnedEquipmentRemarks(e.target.value)}
-								style={{
-									margin: 10
-								}}
-							/>
 						</div>
 						<div style={{display: 'flex'}}>
-							<TextField
+								<TextField
+									id="equipment-remarks"
+									label="Returned Equipment Remarks"
+									placeholder="Type the status of the returned equipment"
+									className={classes.textField}
+									margin="normal"
+									variant="filled"
+									value={returnedEquipmentRemarks}
+									multiline
+									rowsMax={4}
+									onChange={e => setReturnedEquipmentRemarks(e.target.value)}
+									style={{
+										marginRight: 16
+									}}
+								/>
+								<TextField
 								id="returned-date"
 								label="Returned Date"
 								type="datetime-local"
@@ -309,13 +281,15 @@ const ReturnEquipmentForm = props => {
 	}
 
 	const handleSubmit = () => {
-		const uri = 'http://localhost:8001/borrow-equipment';
+		const uri = 'http://localhost:8001/return-equipment';
 		const head = new Headers();
 		const req = new Request(uri, {
 			method: 'POST',
 			headers: head,
 			mode: 'no-cors',
 			body: JSON.stringify({
+				borrowed_id: !isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.borrowed_id),
+				equipment_id:!isLoadingBorrowed && equipments.filter(eq => borrowedEquipmentName === `${eq.eq_brand} ${eq.eq_unit} ${eq.eq_model}`).map(eq => eq.eq_id),
 				equipment_name: borrowedEquipmentName,
 				returnee_name: returneeName,
 				returnee_office: returneeOffice,
@@ -328,8 +302,10 @@ const ReturnEquipmentForm = props => {
 		})
 		fetch(req)
 		.then(response => {
-			setTransactionStatus(`New Equipment ${borrowedEquipmentName} has been returned successfully.`)
-			clearFields()
+			if(response.status === 200) {
+				setTransactionStatus(`New Equipment ${borrowedEquipmentName} has been returned successfully.`)
+				clearFields()
+			}
 		})
 		.catch(error => console.log(error.message))
 	}
@@ -361,7 +337,6 @@ const ReturnEquipmentForm = props => {
 	const encodeImageFileAsURL = (e, user) => {
 		const file = e.target.files[0];
 		const reader = new FileReader();
-		let str = "";
 		reader.onloadend = function() {
 			if(user === 'borrower')
 				setReturneeSignature(reader.result);
@@ -374,7 +349,9 @@ const ReturnEquipmentForm = props => {
 
 	return (
 		//load disabled borrowing form containing the borrowed data of the equipment set to return
-		<div className="return_equipment-form">
+		<div className="return_equipment-form" style={{
+			textAlign: 'center'
+		}}>
 			<h2>Return An Equipment</h2>
 			<Stepper activeStep={activeStep} alternativeLabel>
 			{steps.map(label => (
@@ -404,6 +381,7 @@ const ReturnEquipmentForm = props => {
 							{activeStep === steps.length - 1 ? 'Finish' : 'Next'}
 						</Button>
 					</div>
+					<div className="success">{transactionStatus}</div>
 				</div>
 			)}
 			</div>

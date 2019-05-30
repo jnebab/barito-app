@@ -1,9 +1,5 @@
 const mysql = require('mysql');
-// const formidable = require('formidable');
-// const static = require('node-static');
-// const file = new static.Server('./public');
-// const { parse } = require('querystring');
-// const fs = require('fs');
+const _ = require('lodash');
 
 var connection = mysql.createConnection({
 	host: 'localhost',
@@ -87,26 +83,13 @@ handlers["/return-equipment"] = (req, res) => {
 	if(req.method === "POST") {
 		let body = '';
 		req.on('data', chunk => {
-				body += chunk.toString(); // convert Buffer to string
+				body += chunk.toString();
 		});
 		req.on('end', () => {
-				const { equipment_name, borrower_name, date_borrowed, returnee_name, returnee_signature, receiving_personnel_name, receiving_personnel_signature, returned_date, remarks } = JSON.parse(body);
-				const bname = borrower_name;
-				const bdate = date_borrowed;
-				let equipmentID = null;
-				let borrowedID = null;
-				connection.query("SELECT eq_id, borrowed_id from borrowed_equipment_tbl WHERE borrower_name = '?' AND borrowed_date = '?'", [ bname, bdate ], (err, result, fields) => {
+				const { borrowed_id, equipment_id, equipment_name, returnee_name, returnee_signature, receiving_personnel_name, receiving_personnel_signature, returned_date, returned_equipment_remarks } = JSON.parse(body);
+				console.log("returnee name", returnee_name)
+				connection.query("UPDATE borrowed_equipment_tbl SET returnee_name = ?, returnee_signature = ?, receiving_personnel_name = ?, receiving_personnel_signature = ?, returned_date = ?, returned_eq_remarks = ? WHERE borrowed_id=?; UPDATE equipment_tbl SET eq_status = 'available' WHERE eq_id = ?; INSERT INTO transaction_history_tbl(transaction_type, transaction_date, transaction_user, transaction_item) VALUES (?, ?, ?, ?);" , [ returnee_name, returnee_signature, receiving_personnel_name, receiving_personnel_signature, returned_date, returned_equipment_remarks, borrowed_id[0], equipment_id[0], 'return', new Date(), receiving_personnel_name, equipment_name ], (err, result, fields) => {
 					if (err) throw err.message;
-					equipmentID = result[0].eq_id;
-					borrowedID = result[0].borrowed_id;
-				})
-				connection.query("UPDATE borrowed_equipment_tbl SET returnee_name = '?', returnee_signature = '?', receiving_personnel_name = '?', receiving_personnel_signature = '?', returned_date = '?', remarks = '?' WHERE borrowed_id='?'; INSERT INTO transaction_history_tbl(transaction_type, transaction_date, transaction_user, transaction_item) VALUES (?, ?, ?, ?);" , [ returnee_name, returnee_signature, receiving_personnel_name, receiving_personnel_signature, returned_date, remarks, borrowedID, 'return', new Date(), receiving_personnel_name, equipment_name ], (err, result, fields) => {
-					if (err) throw err.message;
-						console.log("Number of records inserted: " + result.affectedRows);
-						res.write("Number of records updated: " + result.affectedRows);
-				})
-				connection.query("UPDATE equipment_tbl SET eq_status = 'reserved' WHERE eq_id == ?", [equipmentID], (err, result, fields) => {
-					console.log("return equipment updated: " + result.affectedRows);
 				})
 				res.end();
 		});
@@ -124,9 +107,9 @@ handlers["/available-equipments"] = (req, res) => {
 
 handlers["/borrowed-equipments"] = (req, res) => {
 	if(req.method === "GET") {
-		connection.query("SELECT * FROM borrowed_equipment_tbl; SELECT * FROM equipment_tbl", (err, result, fields) => {
+		connection.query("SELECT equipment_tbl.eq_brand, equipment_tbl.eq_unit, equipment_tbl.eq_model, borrowed_equipment_tbl.eq_id, borrowed_equipment_tbl.borrowed_id, borrowed_equipment_tbl.borrower_name, borrowed_equipment_tbl.borrower_purpose, borrowed_equipment_tbl.borrower_office, borrowed_equipment_tbl.borrowed_date, borrowed_equipment_tbl.borrower_signature, borrowed_equipment_tbl.expected_return_date, borrowed_equipment_tbl.releasing_personnel_name, borrowed_equipment_tbl.releasing_personnel_signature, borrowed_equipment_tbl.returned_eq_remarks FROM equipment_tbl INNER JOIN borrowed_equipment_tbl ON equipment_tbl.eq_id = borrowed_equipment_tbl.eq_id", (err, result, fields) => {
 			if (err) throw err.message;
-				res.end(JSON.stringify(result));  
+				res.end(JSON.stringify(result)); 
 		})
 	};
 }
@@ -147,6 +130,22 @@ handlers["/transaction-history"] = (req, res) => {
 				res.end(JSON.stringify(result));
 		})
 	};
+}
+
+handlers["/pickup-events"] = (req, res) => {
+	if(req.method === 'GET') {
+		connection.query("SELECT reservee_name, date_to_pickup FROM reserved_equipment_tbl; SELECT borrower_name, expected_return_date FROM borrowed_equipment_tbl", (err, result, fields) => {
+			const events = _.mergeWith(result[0], result[1], customizer)
+			if (err) throw err.message;
+				res.end(JSON.stringify(events));
+		})
+	};
+}
+
+function customizer(objValue, srcValue) {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue);
+  }
 }
 
 require('http').createServer((req, res) => {

@@ -3,8 +3,6 @@ import { TextField, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { HistoryLogContext } from '../../Store'
 
-//import './Forms.css'
-
 const useStyles = makeStyles(theme => ({
 	container: {
 		display: 'flex',
@@ -31,7 +29,6 @@ const AddEquipmentForm = props => {
 	const [description, setDescription] = useState("")
 	const [status, setStatus] = useState("")
 	const [transactionStatus, setTransactionStatus] = useState("")
-	const [addHistory, setAddHistory] = useContext(HistoryLogContext)
 
 	const handleSubmit = () => {
 		const uri = 'http://localhost:8001/add-equipment';
@@ -52,11 +49,6 @@ const AddEquipmentForm = props => {
 		fetch(req)
 		.then(response => {
 			setTransactionStatus(`New Equipment ${brand} ${unit} ${model} has been added successfully.`)
-			setAddHistory([...addHistory, {
-				transaction: 'Add New Equipment',
-				equipment: `${brand} ${unit} ${model}`,
-				time: Date.now()
-			}])
 			clearFields()
 		})
 		.catch(error => console.log(error.message))

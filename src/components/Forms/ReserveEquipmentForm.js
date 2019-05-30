@@ -48,9 +48,23 @@ const ReserveEquipmentForm = props => {
 			})
 		});
 		fetch(req)
-		.then(response => response.status === 200 && setTransactionStatus(`${equipmentName} has been successfully reserved for ${reserveeName}.`))
+		.then(response => {
+			if(response.status === 200) {
+				setTransactionStatus(`${equipmentName} has been successfully reserved for ${reserveeName}.`)
+				clearFields()
+			}
+		})
 		.catch(error => setTransactionStatus(error.message))
 	}
+
+	const clearFields = () => {
+		setReserveeName("")
+		setReserveeOffice("")
+		setReserveePurpose("")
+		setDateToUse("")
+		setEquipmentName("")
+	}
+
 	return (
 		<div
 			style={{

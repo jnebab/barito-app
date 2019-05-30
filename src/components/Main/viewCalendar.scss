@@ -1,7 +1,20 @@
 @import '~@fullcalendar/core/main.css';
 @import '~@fullcalendar/daygrid/main.css';
 
-// .fc-unthemed td {
-// 	height: 100px;
-// 	width: 100px;
-// }
+a > .b-signature,
+a > .p-signature {
+	display: none;
+}
+
+a:hover > .b-signature {
+	display: block;
+	position: absolute;
+	border: 1px solid orangered;
+}
+
+a:hover > .p-signature {
+	display: block;
+	position: absolute;
+	border: 1px solid orangered;
+	right: 50px;
+}

@@ -40,10 +40,6 @@ const useStyles = makeStyles(theme => ({
 	backButton: {
     marginRight: 8,
   },
-  // instructions: {
-  //   marginTop: 8,
-  //   marginBottom: 8,
-	// }
 }))
 
 function getSteps() {
@@ -66,7 +62,6 @@ const BorrowEquipmentForm = props => {
 	const [availableEquipments, isLoadingAvailable] = useContext(AvailableEquipmentContext)
 	const [reservedEquipments, isLoadingReserve] = useContext(ReservedEquipmentContext)
 	const [transactionStatus, setTransactionStatus] = ("")
-	const [addHistory, setAddHistory] = useContext(HistoryLogContext)
 	const steps = getSteps()
 
 	function getStepContent(stepIndex) {
@@ -289,13 +284,10 @@ const BorrowEquipmentForm = props => {
 		})
 		fetch(req)
 		.then(response => {
-			setTransactionStatus(`New Equipment ${equipmentName} has been added successfully.`)
-			setAddHistory([...addHistory, {
-				transaction: 'Add New Equipment',
-				equipment: equipmentName,
-				time: Date.now()
-			}])
-			clearFields()
+			if(response.status === 200) {
+				setTransactionStatus(`${equipmentName} has been successfully borrowed by ${equipmentName}`)
+				clearFields()
+			}
 		})
 		.catch(error => console.log(error.message))
 	}
@@ -361,7 +353,7 @@ const BorrowEquipmentForm = props => {
 							{activeStep === steps.length - 1 ? 'Finish' : 'Next'}
 						</Button>
 					</div>
-					<p>{transactionStatus}</p>
+					<div className="success">{transactionStatus}</div>
 				</div>
 
 			)}

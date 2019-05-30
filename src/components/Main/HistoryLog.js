@@ -22,10 +22,20 @@ const HistoryLog = props => {
 		<div>
 			<h2 style={{textAlign: 'center'}}>History Log</h2>
 			<List className={classes.root} style={{ margin: '0 auto', maxWidth: '70vw'}}>
-				{transactions.map(tr => {
+				{transactions.map((tr,i) => {
 					const transaction = tr.transaction_type === 'add' ? 'NEW EQUIPMENT' : tr.transaction_type === 'reserve' ? 'EQUIPMENT RESERVATION' : tr.transaction_type === 'borrow' ? 'EQUIPMENT BORROWED' : 'EQUIPMENT RETURNED'
+					const transactionDate = Date.parse(tr.transaction_date)
+					const options = {
+						year: 'numeric',
+						month: 'numeric',
+						day: 'numeric',
+						hour: 'numeric',
+						minute: 'numeric',
+						second: 'numeric'
+					}
+
 					return (
-						<ListItem alignItems="flex-start">
+						<ListItem key={i} alignItems="flex-start">
 							<ListItemText
 								secondary={
 									<React.Fragment>
@@ -34,7 +44,7 @@ const HistoryLog = props => {
 										</Typography>
 										<Typography variant="caption">{
 										`
-										Date: ${tr.transaction_date} 
+										Date: ${new Intl.DateTimeFormat('en-US', options).format(transactionDate)}
 										Equipment: ${tr.transaction_item}
 										`}
 										{tr.transaction_user != null && `Released by/Received by: ${tr.transaction_user}`}</Typography>
