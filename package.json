@@ -18,7 +18,7 @@
     "electron": "^4.1.4",
     "electron-builder": "^20.39.0",
     "electron-is-dev": "^1.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "lodash.merge": "^4.6.1",
     "mysql": "^2.16.0",
     "node-sass": "^4.12.0",
