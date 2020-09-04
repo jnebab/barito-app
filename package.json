@@ -21,7 +21,7 @@
     "lodash": "^4.17.11",
     "lodash.merge": "^4.6.1",
     "mysql": "^2.16.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.0",
